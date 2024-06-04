@@ -1,0 +1,83 @@
+I. CREATE DATABASE IN MONGODB
+>use nealDB
+switched to db vinitdb
+II. CRUD (CREATE, READ, UPDATE, DELETE) OPERATIONS
+>db.createCollection("Student");
+{ "ok" : 1 }
+>db.Student.insert({_id:1,name:"vinit",grade:9});
+WriteResult({ "nInserted" : 1 })
+>db.Student.update({_id:6,name:"qwert"},{$set:{grade:4}},{upsert:true});
+WriteResult({ "nMatched" : 0, "nUpserted" : 1, "nModified" : 0, "_id" : 6 })
+>db.Student.find();
+{ "_id" : 1, "name" : "vinit", "grade" : 9 }
+{ "_id" : 2, "name" : "Abc", "grade" : 10 }
+{ "_id" : 3, "name" : "Mno", "grade" : 5 }
+{ "_id" : 4, "name" : "Pqr", "grade" : 8 }
+> show collections;
+Student
+III. Save Method
+> db.Student.save({name:"zzz",_id:10,grade:8});
+WriteResult({ "nMatched" : 0, "nUpserted" : 1, "nModified" : 0, "_id" : 10 })
+IV. COUNT
+> db.Student.count();
+6
+> db.Student.count({grade:9});
+1
+
+
+V FIND
+> db.Student.find({grade:{$lt:5}},{name:1,grade:1,_id:0});
+{ "grade" : 2, "name" : "qwert" }
+> db.Student.find({name:{$in:["neal","Abc","Mno"]}},{name:1,grade:1,_id
+:0});
+{ "name" : "neal", "grade" : 9 }
+{ "name" : "Abc", "grade" : 10 }
+{ "name" : "Mno", "grade" : 5 }
+> db.Student.find({name:/^S/},{name:1,grade:1,_id:0});
+{ "name" : "neal", "grade" : 9 }
+> db.Student.find({name:/.b/},{name:1,grade:1,_id:0});
+{ "name" : "Abc", "grade" : 10 }
+> db.Student.find().sort({name:1});
+{ "_id" : 2, "name" : "Abc", "grade" : 10 }
+{ "_id" : 3, "name" : "Mno", "grade" : 5 }
+{ "_id" : 4, "name" : "Pqr", "grade" : 8 }
+{ "_id" : 1, "name" : "neal", "grade" : 9 }
+{ "_id" : 7, "name" : "kkk", "grade" : 6 }
+{ "_id" : 6, "grade" : 2, "name" : "qwert" }
+> db.Student.find().sort({name:1,grade:-1});
+{ "_id" : 2, "name" : "Abc", "grade" : 10 }
+{ "_id" : 3, "name" : "Mno", "grade" : 5 }
+{ "_id" : 4, "name" : "Pqr", "grade" : 8 }
+{ "_id" : 1, "name" : "neal", "grade" : 9 }
+{ "_id" : 7, "name" : "kkk", "grade" : 6 }
+{ "_id" : 6, "grade" : 2, "name" : "qwert" }
+> db.Student.find({grade:8}).limit(3);
+
+
+
+{ "_id" : 4, "name" : "Pqr", "grade" : 8 }
+{ "_id" : 10, "name" : "zzz", "grade" : 8 }
+> db.Student.find().skip(2);
+{ "_id" : 3, "name" : "Mno", "grade" : 5 }
+{ "_id" : 4, "name" : "Pqr", "grade" : 8 }
+{ "_id" : 6, "grade" : 2, "name" : "qwert" }
+{ "_id" : 7, "name" : "kkk", "grade" : 6 }
+{ "_id" : 10, "name" : "zzz", "grade" : 8 }
+VI.AGGREGATE FUNCTIONS
+> db.faculty.aggregate ( {$match:{department:"mech"}}, {$group : {_id :
+"$designation", AverageSal :{$avg:"$salary"} } },
+{$match:{AverageSal:{$gt:50000}}});
+{ "_id" : " associate prof", "AverageSal" : 85000 }
+{ "_id" : "assistant prof", "AverageSal" : 70000 }
+VII. ARRAYS
+> db.food.insert({_id:1,fruits:['apple','mango']});
+WriteResult({ "nInserted" : 1 })
+> db.food.find({fruits:['pineapple','mango','orange']});
+{ "_id" : 3, "fruits" : [ "pineapple", "mango", "orange" ] }
+> db.food.find({fruits:{$all:['pineapple']}});
+{ "_id" : 2, "fruits" : [ "pineapple", "mango", "grapes" ] }
+{ "_id" : 3, "fruits" : [ "pineapple", "mango", "orange" ] }
+> db.food.update({_id:2},{$set:{'fruits.1':'apple'}});
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+> db.food.update({_id:2},{$push:{price:{grapes:80,mango:200,cherry:100}}} );
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
